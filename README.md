@@ -11,6 +11,7 @@
 
 = For 12V, 5 Amp SPMPS
   - Light and Fan Connections Are Directly to one single Realy connected to D3 ESP Pin 
+
 = For 12V, 10 Amp SMPS
   - Light and Fan Connections Are Directly to SPMS for all time On.
 ****************************************************************************************
