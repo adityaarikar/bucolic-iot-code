@@ -9,11 +9,15 @@
 
 - D7 ESP Pin is SPI Pin Connected to DHT11 SENSOR DATA PIN
 
-= For 12V, 5 Amp SPMPS
-  - Light and Fan Connections Are Directly to one single Realy connected to D3 ESP Pin 
-
 = For 12V, 10 Amp SMPS
   - Light and Fan Connections Are Directly to SPMS for all time On.
+
+= For 12V, 5 Amp SPMPS
+  - Light and Fan Connections Are Directly to one single Realy connected to D3 ESP Pin 
+  - TURN OFF D3 PIN when Switching on Pump_A(D1 pin) or PUMP_B(D2 PIN)
+  - Again, TURN ON D3 PIN after All triggering is complete on D1 and D2 pins. 
+
+
 ****************************************************************************************
 
 
