@@ -29,8 +29,8 @@
 
 // ************************* APP SYSTEM CONNECTION DETAILS BEGIN *********************//
 //ssid and password for webserver
-const char* ssid = "Aditya";
-const char* password = "123123aa";
+//const char* ssid = "Aditya";
+//const char* password = "123123aa";
 
 // Define NTP Client to get time
 long utcOffsetInSeconds = 0;
@@ -45,8 +45,8 @@ AsyncWebServer server(80);
 
 // ************************* ESP SOFTWARE UPDATE CONNECTION DETAILS BEGIN *********************//
 //ssid and password for webserver
-//const char *ssid = "Mushroom Garden";
-//const char *password = "Bucolic@IoT";
+const char *ssid = "Mushroom Garden";
+const char *password = "Bucolic@IoT";
 // *************************  ESP SOFTWARE UPDATE CONNECTION DETAILS  END *********************//
 
 
@@ -109,16 +109,15 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.print("Configuring access point…");
+
+  WiFi.softAP(ssid, password);
+
+  IPAddress myIP = WiFi.softAPIP();
+
+  Serial.print("AP IP address: ");
+
+  Serial.println(myIP);
 
   Serial.begin(115200);
 
@@ -190,6 +189,13 @@ void loop() {
     digitalWrite(pumpA, HIGH);
     digitalWrite(pumpB, LOW);
     delay(pumpBOnTime);
+  }
+  int j = 5;
+  while(j <= 0){
+    Serial.print("Aditya ");
+    Serial.print(j);
+    delay(1000);
+    j++;
   }
 
   digitalWrite(pumpA, LOW);
