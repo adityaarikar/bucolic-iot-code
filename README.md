@@ -2,7 +2,7 @@
 
 
 
-# ***********  1 Core IoT for Only Supporting Mushroom Garden System 1 ***********
+#  Single_Core_IoT for Only Supporting Mushroom Garden System 1 
 
 - D1 ESP Pin to Realy for Controlling Pump A
 - D2 ESP Pin to Realy for Controlling Pump B
@@ -25,7 +25,7 @@
 ****************************************************************************************
 
 
-# ***********  2 Core IoT for Only Supporting Mushroom Garden System 1 and Mushroom Garden System 2 ***********
+# Dual_Core_IoT for Only Supporting Mushroom Garden System 1 and Mushroom Garden System 2 
 
 - D1 ESP Pin to Realy for Controlling Pump A
 - D2 ESP Pin to Realy for Controlling Pump B
