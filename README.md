@@ -1,4 +1,4 @@
-# bucolic-iot-code
+# ** IOT BOX CONNECTION INSTRUCTIONS ** 
 
 
 
