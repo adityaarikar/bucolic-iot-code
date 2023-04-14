@@ -1,5 +1,6 @@
 //Misti 1 -> For Irrigation Subsystem Alpha(IRS-Aplpa)
 //2 pumps
+//PumpA : PumpB = 30 : 70
 //Proper simulation for Misti 1 single core Alpha system
 //Corrected the time to spray with values of tow and delta
 //Implemented the number of cycles for both pumps
