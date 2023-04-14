@@ -1,0 +1,276 @@
+//Misti 1 -> For Irrigation Subsystem Alpha(IRS-Aplpa)
+//2 pumps
+//Proper simulation for Misti 1 single core Alpha system
+//Corrected the time to spray with values of tow and delta
+//Implemented the number of cycles for both pumps
+//14/04/2023
+
+
+
+
+// *************************************LIBRARIES BEGIN*************************///
+//used for wifi connection
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266mDNS.h>
+#include <Arduino.h>
+#include <math.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+//used to makes esp a webserver which handels async requests
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+//To adjust the responce into json format
+#include "AsyncJson.h"
+#include "ArduinoJson.h"
+//Temperature and humidity library
+#include <SimpleDHT.h>
+#include <AsyncElegantOTA.h>
+// ***************************************LIBRARIES END****************************///
+
+
+
+
+// ************************* APP SYSTEM CONNECTION DETAILS BEGIN *********************//
+//ssid and password for webserver
+//const char* ssid = "Aditya";
+//const char* password = "123123aa";
+
+// Define NTP Client to get time
+long utcOffsetInSeconds = 0;
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
+
+AsyncWebServer server(80);
+// ************************* APP SYSTEM CONNECTION DETAILS END *********************//
+
+
+
+
+// ************************* ESP SOFTWARE UPDATE CONNECTION DETAILS BEGIN *********************//
+//ssid and password for webserver
+const char *ssid = "Mushroom Garden";
+const char *password = "Bucolic@IoT";
+// *************************  ESP SOFTWARE UPDATE CONNECTION DETAILS  END *********************//
+
+
+
+
+// ************** IRRIGATION SYSTEM PHYSICS DETAILS BEGIN ************************************//
+//Veriables used
+double totalTimeToSpray; //sec
+
+double waterSprayDurationA;
+double towForPumpA = 4; //sec
+double deltaForPumpA = 1.5; //sec
+double betaForPumpA = 2; //sec
+int totalNumberOfCycleForPumpA;
+int completeCycleForA;
+double lastSprayCycleTimeForPumpA;
+int counterOfA;
+
+double waterSprayDurationB;
+double towForPumpB = 2; //sec
+double deltaForPumpB = 1; //sec
+double betaForPumpB = 2; //sec
+int totalNumberOfCycleForPumpB;
+int completeCycleForB;
+double lastSprayCycleTimeForPumpB;
+int counterOfB;
+
+int completeCycleForBoth;
+
+int pumpStateA = HIGH;
+int pumpStateB = LOW;
+// ************** IRRIGATION SYSTEM PHYSICS DETAILS BEGIN ************************************//
+
+
+
+
+// ************** ELECTRICAL CONNECTION DETAILS BEGIN ************************************//
+//created dht11 object
+int dhtpin = D7; //DHT11
+int pumpA = D1;
+int pumpB = D2;
+int light = D3;
+int fan1 = D4;
+int fan2 = D5;
+// ************** ELECTRICAL CONNECTIONS DETAILS BEGIN ************************************//
+
+
+
+
+// ************** TEMPERATURE HUMIDITY SENSOR DETAILS BEGIN ************************************//
+SimpleDHT11 dht11(dhtpin);
+float temp;
+float humid;
+// **************TEMPERATURE HUMIDITY SENSOR  DETAILS BEGIN ************************************//
+
+
+
+
+void setup() {
+  // updatreBootLoaderSetup();
+  Serial.println("Booting");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+  Serial.print("Configuring access point…");
+
+  WiFi.softAP(ssid, password);
+
+  IPAddress myIP = WiFi.softAPIP();
+
+  Serial.print("AP IP address: ");
+
+  Serial.println(myIP);
+
+  Serial.begin(115200);
+
+  pinMode(pumpA, OUTPUT);
+  pinMode(pumpB, OUTPUT);
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
+    request->send(200, "text/plain", "Hi! I am ESP8266 2.0.");
+  });
+
+  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+  server.begin();
+  Serial.println("HTTP server started");
+
+  timeClient.begin();
+}
+
+void loop() {
+  timeClient.update();
+
+  //Getting Temperature and humidity Valuesz
+  byte temperature = 0;
+  byte humidity = 0;
+  int err = SimpleDHTErrSuccess;
+  if ((err = dht11.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+    temp = 00;
+
+    Serial.print("Read DHT11 failed, err="); Serial.print(SimpleDHTErrCode(err));
+    Serial.print(","); Serial.println(SimpleDHTErrDuration(err)); delay(1000);
+    return;
+  }
+
+  temp = temperature;
+  humid = humidity;
+
+  totalTimeToSpray = (14 * temp) / 17 + 1.18;
+
+  waterSprayDurationA = totalTimeToSpray * 0.3;
+  totalNumberOfCycleForPumpA = waterSprayDurationA / ( towForPumpA + deltaForPumpA);
+  completeCycleForA = totalNumberOfCycleForPumpA - 1;
+  lastSprayCycleTimeForPumpA = waterSprayDurationA - (completeCycleForA * (towForPumpA + deltaForPumpA));
+  counterOfA = completeCycleForA;
+
+  Serial.println(temp);
+  Serial.println(totalTimeToSpray);
+  Serial.println(waterSprayDurationA);
+  Serial.println(totalNumberOfCycleForPumpA);
+  Serial.println(completeCycleForA);
+  Serial.println();
+
+  waterSprayDurationB = totalTimeToSpray * 0.7;
+  totalNumberOfCycleForPumpB = waterSprayDurationB / ( towForPumpB + deltaForPumpB);
+  completeCycleForB = totalNumberOfCycleForPumpB - 1;
+  lastSprayCycleTimeForPumpB = waterSprayDurationB - (completeCycleForB * (towForPumpB + deltaForPumpB));
+  counterOfB = completeCycleForB;
+  Serial.println(waterSprayDurationB);
+  Serial.println(totalNumberOfCycleForPumpB);
+  Serial.println(completeCycleForB);
+
+  unsigned int pumpAOnTime = (towForPumpA + deltaForPumpA) * 1000;
+  unsigned int pumpBOnTime = (towForPumpB + deltaForPumpB ) * 1000;
+
+  //Decide the complete cycle for both pumps alternatively
+  if (counterOfA > counterOfB) {
+    completeCycleForBoth = counterOfB;
+  } else {
+    completeCycleForBoth = counterOfA;
+  }
+
+  //Loop for both pump alternative ON OFF
+  for (int i = completeCycleForBoth; i > 0; i--) {
+    //*****************Pump A*******************
+    digitalWrite(pumpA, LOW);
+    digitalWrite(pumpB, HIGH);
+    Serial.println("Spray A ON");
+    delay(pumpAOnTime);
+    digitalWrite(pumpA, HIGH);
+    digitalWrite(pumpB, HIGH);
+    Serial.println("Spray A OFF");
+    delay(betaForPumpA * 1000);
+    //*****************Pump A*******************
+
+    //*****************Pump B*******************
+    digitalWrite(pumpA, HIGH);
+    digitalWrite(pumpB, LOW);
+    Serial.println("Spray B ON");
+    delay(pumpBOnTime);
+    digitalWrite(pumpA, HIGH);
+    digitalWrite(pumpB, HIGH);
+    Serial.println("Spray B OFF");
+    delay(betaForPumpB * 1000);
+    //*****************Pump B*******************
+  }
+
+  //Remaining Cycle of Pump A
+  for (int i = totalNumberOfCycleForPumpA - completeCycleForBoth; i > 0; i--) {
+    if (i == 1) {
+      digitalWrite(pumpA, LOW);
+      digitalWrite(pumpB, HIGH);
+      Serial.println("Spray A ON");
+      delay(lastSprayCycleTimeForPumpA * 1000);
+      digitalWrite(pumpA, HIGH);
+      digitalWrite(pumpB, HIGH);
+      Serial.println("Spray A OFF");
+      delay(betaForPumpA * 1000);
+    } else {
+      digitalWrite(pumpA, LOW);
+      digitalWrite(pumpB, HIGH);
+      Serial.println("Spray A ON");
+      delay(pumpAOnTime);
+      digitalWrite(pumpA, HIGH);
+      digitalWrite(pumpB, HIGH);
+      Serial.println("Spray A OFF");
+      delay(betaForPumpA * 1000);
+    }
+  }
+
+  for (int i = totalNumberOfCycleForPumpB - completeCycleForBoth; i > 0; i--) {
+    if (i == 1) {
+      digitalWrite(pumpA, HIGH);
+      digitalWrite(pumpB, LOW);
+      Serial.println("Spray B ON");
+      delay(lastSprayCycleTimeForPumpB * 1000);
+      digitalWrite(pumpA, HIGH);
+      digitalWrite(pumpB, HIGH);
+      Serial.println("Spray B OFF");
+      delay(betaForPumpB * 1000);
+    } else {
+      digitalWrite(pumpA, HIGH);
+      digitalWrite(pumpB, LOW);
+      Serial.println("Spray B ON");
+      delay(pumpBOnTime);
+      digitalWrite(pumpA, HIGH);
+      digitalWrite(pumpB, HIGH);
+      Serial.println("Spray B OFF");
+      delay(betaForPumpB * 1000);
+    }
+
+  }
+
+  digitalWrite(pumpA, HIGH);
+  digitalWrite(pumpB, HIGH);
+  digitalWrite(light, HIGH);
+  digitalWrite(fan1, HIGH);
+  digitalWrite(fan2, LOW);
+
+  int totalTimeOfSprayAndDelay = (totalTimeToSpray * 1000) + (totalNumberOfCycleForPumpA * 1000) + (totalNumberOfCycleForPumpB * 1000);
+  unsigned int totalOffTime = 3600000 - totalTimeOfSprayAndDelay;
+  delay(totalOffTime);
+}
