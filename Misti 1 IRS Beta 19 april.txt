@@ -1,0 +1,444 @@
+//Misti 1 -> For Irrigation Subsystem Alpha(IRS-Bita)
+//Issue of dht22 is solved here
+//2 pumps
+//D7 - DHT22
+//D1 - pumpAIRS1
+//D2 - pumpBIRS1
+//D3 - pumpAIRS2
+//D4 - pumpBIRS2
+//D5 - light and Fan
+//14/04/2023
+
+
+
+
+// *************************************LIBRARIES BEGIN*************************///
+//used for wifi connection
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266mDNS.h>
+#include <Arduino.h>
+#include <math.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+//used to makes esp a webserver which handels async requests
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+//To adjust the responce into json format
+#include "AsyncJson.h"
+#include "ArduinoJson.h"
+//Temperature and humidity library
+#include <SimpleDHT.h>
+#include <AsyncElegantOTA.h>
+// ***************************************LIBRARIES END****************************///
+
+
+
+
+// ************************* APP SYSTEM CONNECTION DETAILS BEGIN *********************//
+//ssid and password for webserver
+//const char* ssid = "Aditya";
+//const char* password = "123123aa";
+
+// Define NTP Client to get time
+long utcOffsetInSeconds = 0;
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
+
+AsyncWebServer server(80);
+// ************************* APP SYSTEM CONNECTION DETAILS END *********************//
+
+
+
+
+// ************************* ESP SOFTWARE UPDATE CONNECTION DETAILS BEGIN *********************//
+//ssid and password for webserver
+const char *ssid = "Mushroom Garden";
+const char *password = "Bucolic@IoT";
+// *************************  ESP SOFTWARE UPDATE CONNECTION DETAILS  END *********************//
+
+
+
+
+// ************** IRRIGATION SYSTEM PHYSICS DETAILS BEGIN ************************************//
+String pumpIRS1StartTime = "--";
+String pumpIRS1StopTime = "--";
+String pumpIRS2StartTime = "--";
+String pumpIRS2StopTime = "--";
+int device = 2;
+boolean setTimeDone = false;
+
+//Veriables used
+double totalTimeToSpray; //sec
+
+double waterSprayDurationA;
+double towForPumpA = 4; //sec
+double deltaForPumpA = 1.5; //sec
+double betaForPumpA = 2; //sec
+int totalNumberOfCycleForPumpA;
+int completeCycleForA;
+double lastSprayCycleTimeForPumpA;
+int counterOfA;
+
+double waterSprayDurationB;
+double towForPumpB = 2; //sec
+double deltaForPumpB = 1; //sec
+double betaForPumpB = 2; //sec
+int totalNumberOfCycleForPumpB;
+int completeCycleForB;
+double lastSprayCycleTimeForPumpB;
+int counterOfB;
+
+int completeCycleForBoth;
+// ************** IRRIGATION SYSTEM PHYSICS DETAILS BEGIN ************************************//
+
+
+
+
+// ************** ELECTRICAL CONNECTION DETAILS BEGIN ************************************//
+//created dht11 object
+int dhtpin = D7; //DHT11
+int pumpAIRS1 = D1;
+int pumpBIRS1 = D2;
+int pumpAIRS2 = D3;
+int pumpBIRS2 = D4;
+int light = D5;
+// ************** ELECTRICAL CONNECTIONS DETAILS BEGIN ************************************//
+
+
+
+
+// ************** TEMPERATURE HUMIDITY SENSOR DETAILS BEGIN ************************************//
+SimpleDHT22 dht22(dhtpin);
+float temp;
+float humid;
+// **************TEMPERATURE HUMIDITY SENSOR  DETAILS BEGIN ************************************//
+
+
+
+
+void setup() {
+  // updatreBootLoaderSetup();
+  Serial.println("Booting");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+  Serial.print("Configuring access point…");
+
+  WiFi.softAP(ssid, password);
+
+  IPAddress myIP = WiFi.softAPIP();
+
+  Serial.print("AP IP address: ");
+
+  Serial.println(myIP);
+
+  Serial.begin(115200);
+
+  pinMode(pumpAIRS1, OUTPUT);
+  pinMode(pumpBIRS1, OUTPUT);
+  pinMode(pumpAIRS2, OUTPUT);
+  pinMode(pumpBIRS2, OUTPUT);
+
+  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+  server.begin();
+  Serial.println("HTTP server started");
+
+  // ************************************************ APIs BEGIN ************************************************************//
+
+  server.on("/getData", HTTP_GET, [](AsyncWebServerRequest * request) {
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    DynamicJsonDocument json(1024);
+    json["device"] = device;
+    json["ip"] = WiFi.localIP();
+    json["temp"] = temp;
+    json["humid"] = humid;
+    json["pumpIRS1StartTime"] = pumpIRS1StartTime;
+    json["pumpIRS1StopTime"] = pumpIRS1StopTime;
+    json["pumpIRS2StartTime"] = pumpIRS2StartTime;
+    json["pumpIRS2StopTime"] = pumpIRS2StopTime;
+    serializeJson(json, *response);
+    request->send(response);
+  });
+
+  server.on("/time", HTTP_GET, [](AsyncWebServerRequest * request) {
+    int newTime;
+    if (request->hasParam("time")) {
+      newTime = request->getParam("time")->value().toInt();
+    }
+    int oldTime;
+    if (!setTimeDone) {
+      oldTime = timeClient.getHours() * 60 * 60 + timeClient.getMinutes() * 60 + timeClient.getSeconds();
+      setTimeDone = true;
+      utcOffsetInSeconds = newTime - oldTime;
+      timeClient.setTimeOffset(utcOffsetInSeconds);
+    }
+    request->send_P(200, "text/plain", "OK");
+  });
+
+  // ************************************************ APIs END ************************************************************//
+
+  timeClient.begin();
+}
+
+void loop() {
+  timeClient.update();
+
+  //Getting Temperature and humidity Valuesz
+  byte temperature = 0;
+  byte humidity = 0;
+  int err = SimpleDHTErrSuccess;
+  if ((err = dht22.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+    temp = 00;
+    Serial.print("Read DHT11 failed, err="); Serial.print(SimpleDHTErrCode(err));
+    Serial.print(","); Serial.println(SimpleDHTErrDuration(err)); delay(1000);
+    return;
+  }
+
+  temp = temperature;
+  humid = humidity;
+
+  totalTimeToSpray = (14 * temp) / 17 + 1.18;
+
+  waterSprayDurationA = totalTimeToSpray * 0.3;
+  totalNumberOfCycleForPumpA = waterSprayDurationA / ( towForPumpA + deltaForPumpA);
+  completeCycleForA = totalNumberOfCycleForPumpA - 1;
+  lastSprayCycleTimeForPumpA = waterSprayDurationA - (completeCycleForA * (towForPumpA + deltaForPumpA));
+  counterOfA = completeCycleForA;
+
+  //  Serial.println(temp);
+  //  Serial.println(totalTimeToSpray);
+  //  Serial.println(waterSprayDurationA);
+  //  Serial.println(totalNumberOfCycleForPumpA);
+  //  Serial.println(completeCycleForA);
+  //  Serial.println();
+
+  waterSprayDurationB = totalTimeToSpray * 0.7;
+  totalNumberOfCycleForPumpB = waterSprayDurationB / ( towForPumpB + deltaForPumpB);
+  completeCycleForB = totalNumberOfCycleForPumpB - 1;
+  lastSprayCycleTimeForPumpB = waterSprayDurationB - (completeCycleForB * (towForPumpB + deltaForPumpB));
+  counterOfB = completeCycleForB;
+  //  Serial.println(waterSprayDurationB);
+  //  Serial.println(totalNumberOfCycleForPumpB);
+  //  Serial.println(completeCycleForB);
+
+  unsigned int pumpAOnTime = (towForPumpA + deltaForPumpA) * 1000;
+  unsigned int pumpBOnTime = (towForPumpB + deltaForPumpB ) * 1000;
+
+  //Decide the complete cycle for both pumps alternatively
+  if (counterOfA > counterOfB) {
+    completeCycleForBoth = counterOfB;
+  } else {
+    completeCycleForBoth = counterOfA;
+  }
+
+  // ************************************************ IRS1 CYCLES BEGIN ************************************************************//
+  pumpIRS1StartTime = timeClient.getFormattedTime();
+  //Loop for both pump alternative ON OFF
+  for (int i = completeCycleForBoth; i > 0; i--) {
+    //*****************Pump A*******************
+    digitalWrite(pumpAIRS1, LOW);
+    digitalWrite(pumpBIRS1, HIGH);
+    digitalWrite(pumpAIRS2, HIGH);
+    digitalWrite(pumpBIRS2, HIGH);
+    Serial.println("IRS1 Spray A ON");
+    delay(pumpAOnTime);
+    digitalWrite(pumpAIRS1, HIGH);
+    digitalWrite(pumpBIRS1, HIGH);
+    digitalWrite(pumpAIRS2, HIGH);
+    digitalWrite(pumpBIRS2, HIGH);
+    Serial.println("IRS1 Spray A OFF");
+    delay(betaForPumpA * 1000);
+    //*****************Pump A*******************
+
+    //*****************Pump B*******************
+    digitalWrite(pumpAIRS1, HIGH);
+    digitalWrite(pumpBIRS1, LOW);
+    digitalWrite(pumpAIRS2, HIGH);
+    digitalWrite(pumpBIRS2, HIGH);
+    Serial.println("IRS1 Spray B ON");
+    delay(pumpBOnTime);
+    digitalWrite(pumpAIRS1, HIGH);
+    digitalWrite(pumpBIRS1, HIGH);
+    digitalWrite(pumpAIRS2, HIGH);
+    digitalWrite(pumpBIRS2, HIGH);
+    Serial.println("IRS1 Spray B OFF");
+    delay(betaForPumpB * 1000);
+    //*****************Pump B*******************
+  }
+
+  //Remaining Cycle of Pump A
+  for (int i = totalNumberOfCycleForPumpA - completeCycleForBoth; i > 0; i--) {
+    if (i == 1) {
+      digitalWrite(pumpAIRS1, LOW);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS1 Spray A ON");
+      delay(lastSprayCycleTimeForPumpA * 1000);
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS1 Spray A OFF");
+      delay(betaForPumpA * 1000);
+    } else {
+      digitalWrite(pumpAIRS1, LOW);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS1 Spray A ON");
+      delay(pumpAOnTime);
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS1 Spray A OFF");
+      delay(betaForPumpA * 1000);
+    }
+  }
+
+  //Remaining Cycle of Pump B
+  for (int i = totalNumberOfCycleForPumpB - completeCycleForBoth; i > 0; i--) {
+    if (i == 1) {
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, LOW);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS1 Spray B ON");
+      delay(lastSprayCycleTimeForPumpB * 1000);
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS1 Spray B OFF");
+      delay(betaForPumpB * 1000);
+    } else {
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, LOW);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS1 Spray B ON");
+      delay(pumpBOnTime);
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS1 Spray B OFF");
+      delay(betaForPumpB * 1000);
+    }
+  }
+  pumpIRS1StopTime = timeClient.getFormattedTime();
+  // *************************************************************** IRS1 CYCLES ENDS **************************************************************************//
+
+
+  // ************************************************ IRS2 CYCLES BEGIN ************************************************************//
+  pumpIRS2StartTime = timeClient.getFormattedTime();
+  //Loop for both pump alternative ON OFF
+  for (int i = completeCycleForBoth; i > 0; i--) {
+    //*****************Pump A*******************
+    digitalWrite(pumpAIRS1, HIGH);
+    digitalWrite(pumpBIRS1, HIGH);
+    digitalWrite(pumpAIRS2, LOW);
+    digitalWrite(pumpBIRS2, HIGH);
+    Serial.println("IRS2 Spray A ON");
+    delay(pumpAOnTime);
+    digitalWrite(pumpAIRS1, HIGH);
+    digitalWrite(pumpBIRS1, HIGH);
+    digitalWrite(pumpAIRS2, HIGH);
+    digitalWrite(pumpBIRS2, HIGH);
+    Serial.println("IRS2 Spray A OFF");
+    delay(betaForPumpA * 1000);
+    //*****************Pump A*******************
+
+    //*****************Pump B*******************
+    digitalWrite(pumpAIRS1, HIGH);
+    digitalWrite(pumpBIRS1, HIGH);
+    digitalWrite(pumpAIRS2, HIGH);
+    digitalWrite(pumpBIRS2, LOW);
+    Serial.println("IRS2 Spray B ON");
+    delay(pumpBOnTime);
+    digitalWrite(pumpAIRS1, HIGH);
+    digitalWrite(pumpBIRS1, HIGH);
+    digitalWrite(pumpAIRS2, HIGH);
+    digitalWrite(pumpBIRS2, HIGH);
+    Serial.println("IRS2 Spray B OFF");
+    delay(betaForPumpB * 1000);
+    //*****************Pump B*******************
+  }
+
+  //Remaining Cycle of Pump A
+  for (int i = totalNumberOfCycleForPumpA - completeCycleForBoth; i > 0; i--) {
+    if (i == 1) {
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, LOW);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS2 Spray A ON");
+      delay(lastSprayCycleTimeForPumpA * 1000);
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS2 Spray A OFF");
+      delay(betaForPumpA * 1000);
+    } else {
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, LOW);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS2 Spray A ON");
+      delay(pumpAOnTime);
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS2 Spray A OFF");
+      delay(betaForPumpA * 1000);
+    }
+  }
+
+  //Remaining Cycle of Pump B
+  for (int i = totalNumberOfCycleForPumpB - completeCycleForBoth; i > 0; i--) {
+    if (i == 1) {
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, LOW);
+      Serial.println("IRS2 Spray B ON");
+      delay(lastSprayCycleTimeForPumpB * 1000);
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS2 Spray B OFF");
+      delay(betaForPumpB * 1000);
+    } else {
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, LOW);
+      Serial.println("IRS2 Spray B ON");
+      delay(pumpBOnTime);
+      digitalWrite(pumpAIRS1, HIGH);
+      digitalWrite(pumpBIRS1, HIGH);
+      digitalWrite(pumpAIRS2, HIGH);
+      digitalWrite(pumpBIRS2, HIGH);
+      Serial.println("IRS2 Spray B OFF");
+      delay(betaForPumpB * 1000);
+    }
+  }
+  pumpIRS2StopTime = timeClient.getFormattedTime();
+  // *************************************************************** IRS2 CYCLES ENDS **************************************************************************//
+
+
+  digitalWrite(pumpAIRS1, HIGH);
+  digitalWrite(pumpBIRS1, HIGH);
+  digitalWrite(pumpAIRS2, HIGH);
+  digitalWrite(pumpBIRS2, HIGH);
+  digitalWrite(light, HIGH);
+
+  int totalTimeOfSprayAndDelay = (totalTimeToSpray * 1000) + (totalNumberOfCycleForPumpA * 1000) + (totalNumberOfCycleForPumpB * 1000);
+  unsigned int totalOffTime = 3600000 - (totalTimeOfSprayAndDelay * 2);
+  delay(totalOffTime);
+}
