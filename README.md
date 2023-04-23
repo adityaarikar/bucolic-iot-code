@@ -6,14 +6,14 @@
 ## Arduino Integrated Development Environment  
 > Adruino IDE 2.1.0;
 * Source: https://www.arduino.cc/en/software
-* Libraries Supported
-   - #include <math.h>; basic maths functions in code
-   - #include <Arduino.h>; basic hardware initilaisations 
-
+  + Libraries Supported
+    - #include <math.h>; basic maths functions in code
+    - #include <Arduino.h>; basic hardware initilaisations 
+ 
 ## DHT Sensor Library
 > Used for reading Temperature and Humidity 
-* Source: Available on Arduino IDE Lib Manager; SimpleDHT by WinLin 1.0.15; 
-* Libraries Supported 
+* Source: Available on Arduino IDE Lib Manager; SimpleDHT by WinLin 1.0.15;
+  + Libraries Supported 
   - #include <SimpleDHT.h>; supports both DHT11 and DHT22 Sensors with code change
 
 
