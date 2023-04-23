@@ -2,11 +2,41 @@
 
 Env Setup 
 
-Arduino IDE: Adruino 2.1.0
+Arduino IDE: Adruino 2.1.0; 
+            Comes Preinitiated with; #include <math.h>; #include <Arduino.h>
 
-DHT Library : SimpleDHT by WinLin 1.0.15; Available on Arduino IDE Lib Manager
-ArduinoJson by Benot Blanchon 0.2.0; Available on Arduino IDE Lib Manager
+DHT Library : SimpleDHT by WinLin 1.0.15; Available on Arduino IDE Lib Manager; #include <SimpleDHT.h>
+
+ArduinoJson by Benot Blanchon 0.2.0; Available on Arduino IDE Lib Manager; #include "ArduinoJson.h"
+                  ESPAsyncWebserver.zip; over WhatsApp , ZIP File, #include "AsyncJson.h".
+         
+
+
+NTPClient by Fabrice Weinberg; v3.2.1.; Available on Arduino IDE Lib Manager; #include <NTPClient.h>
+
+
+https://www.martyncurrey.com/download/esp8266wifi-library/; #include <ESP8266WiFi.h>
+
+#include <ESP8266mDNS.h> ; https://github.com/arduino/esp8266/tree/master/libraries/ESP8266mDNS
+
+
 ArduinoHTTP 
+#include <WiFiClient.h>
+#include <WiFiUdp.h>
+#include <AsyncElegantOTA.h>
+
+
+//used to makes esp a webserver which handels async requests // ZIp Files sent over whatsapp 
+#include <ESPAsyncTCP.h> ESPAsyncTCP.zip; over WhatsApp , ZIP File, #include "AsyncJson.h".
+#include <ESPAsyncWebServer.h>; ESPAsyncWebserver.zip; over WhatsApp , ZIP File, #include "AsyncJson.h".
+
+
+
+
+
+
+
+
 
 #  Single_Core_IoT for Only Supporting Mushroom Garden System 1 
 
