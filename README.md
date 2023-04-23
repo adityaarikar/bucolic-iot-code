@@ -11,38 +11,60 @@
    - #include <Arduino.h>; basic hardware initilaisations 
 
 > DHT Sensor Library
-1.SimpleDHT by WinLin 1.0.15; Available on Arduino IDE Lib Manager; #include <SimpleDHT.h>
+* Used for reading Temperature and Humidity 
+* Source: Available on Arduino IDE Lib Manager; SimpleDHT by WinLin 1.0.15; 
+* Libraries Supported 
+  - #include <SimpleDHT.h>; supports both DHT11 and DHT22 Sensors with code change
 
->ArduinoJson Library 
-1.ArduinoJson by Benot Blanchon 0.2.0; Available on Arduino IDE Lib Manager; #include "ArduinoJson.h"
-2.ESPAsyncWebserver.zip; https://drive.google.com/file/d/1TES0N27uNbsPT2v3WgzVypuP8LMMGjYY/view?usp=sharing , #include "AsyncJson.h".
 
-> NTP(Internet Time) Library 
-1. NTPClient by Fabrice Weinberg; v3.2.1.; Available on Arduino IDE Lib Manager; #include <NTPClient.h>
-
-> For WiFi Connection Library; used for Connecting to Phone App and For FOTA Connection from Laptop 
-https://drive.google.com/file/d/1eKoY9gLPEBaF0-Ln9PviBDkd0zSVOmTW/view?usp=share_link ;
-https://www.martyncurrey.com/download/esp8266wifi-library/ ; #include <ESP8266WiFi.h>
+> For WiFi Connection Library
+* Use for Connecting to Phone App over Wifi and For FOTA Code Update from Laptop over WiFi
+* Source: https://drive.google.com/file/d/1eKoY9gLPEBaF0-Ln9PviBDkd0zSVOmTW/view?usp=share_link ;
+https://www.martyncurrey.com/download/esp8266wifi-library/ ; 
+* Libraries Supported
+ - #include <ESP8266WiFi.h>
 
 > For Giving Name to the ESP8266 over WiFi Connection
 #include <ESP8266mDNS.h> ; https://github.com/arduino/esp8266/tree/master/libraries/ESP8266mDNS ;
 https://drive.google.com/file/d/10fgR-hqb-XwzfpNHIxvtf56FpLlnnWT3/view?usp=share_link
 
 
+> For FOTA Code Update from Laptop over Wifi
+* Source: Arduino IDE Library Manager; AsyncElegantOTA; v.2.27; by Ayush Sharma
+* Libraries Supported 
+  - #include <AsyncElegantOTA.h>
+  - #include <WiFiUdp.h> ; local code Updated over WiFi layer with UDP connectionless protocoal. TCP is more reliable but slower. 
 
-> AsyncElegantOTA; v.2.27; by Ayush Sharma; Arduino IDE Library Manager
-1. #include <AsyncElegantOTA.h>
-2. #include <WiFiUdp.h>
+
+> For Webserver Creation on NodeMCU
+* Use for Communicating with MobileApp
+
+* Source: ESPAsyncWebserver.zip; https://drive.google.com/file/d/1TES0N27uNbsPT2v3WgzVypuP8LMMGjYY/view?usp=share_link,
+* Libraries Supported: 
+  - #include <ESPAsyncWebServer.h>; 
+
+Source:  ESPAsyncTCP.zip; https://drive.google.com/file/d/1hwKnZaZjIiEqsyspjaxX__Kdq7dns3vu/view?usp=share_link , 
+* Libraries Supported: 
+  - #include <ESPAsyncTCP.h>; used to makes esp's webserver handel async TCP request and reply
+  - #include "AsyncJson.h"; used to makes esp's webserver Send async JSON data response 
 
 
+>ArduinoJson Library; 
+* Use for setting  JSON data format for Mobile App Communication 
 
-#include <WiFiClient.h>; 2 Folders; ask which one from Aditya 
-https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClient.h
-https://www.martyncurrey.com/download/esp8266wifi-library/
+* Source: Available on Arduino IDE Lib Manager; ArduinoJson by Benot Blanchon 0.2.0; 
+* Libraries Supported 
+  - #include "ArduinoJson.h"
+  
+* Source: Available on Drive Link; ESPAsyncWebserver.zip; https://drive.google.com/file/d/1TES0N27uNbsPT2v3WgzVypuP8LMMGjYY/view?usp=sharing 
+* Libraries Supported 
+   - #include "AsyncJson.h".
 
-//used to makes esp a webserver which handels async requests // ZIp Files sent over whatsapp 
-#include <ESPAsyncTCP.h> ESPAsyncTCP.zip; https://drive.google.com/file/d/1hwKnZaZjIiEqsyspjaxX__Kdq7dns3vu/view?usp=share_link , 
-#include <ESPAsyncWebServer.h>; ESPAsyncWebserver.zip; https://drive.google.com/file/d/1TES0N27uNbsPT2v3WgzVypuP8LMMGjYY/view?usp=share_link, ZIP File, #include "AsyncJson.h".
+> NTP(Internet Time) Library
+* Use for getting time over WiFi App communication and Mobile Internet 
+* Source: Available on Arduino IDE Lib Manager;  NTPClient by Fabrice Weinberg; v3.2.1.; 
+* Libraries Supported
+ - #include <NTPClient.h>
 
 
 
