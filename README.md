@@ -1,6 +1,6 @@
 
 
-# ** IOT CODING ENVIRONMENT SETUP INSTRUCTIONS ** 
+# IOT CODING ENVIRONMENT SETUP INSTRUCTIONS
 
 
 ## Arduino Integrated Development Environment  
@@ -62,21 +62,20 @@
     - #include <NTPClient.h>; Use for getting time over WiFi App communication and Mobile Internet 
 
 
+****************************************************************************************
+****************************************************************************************
 
 
 # ** IOT BOX DEPENDENT FIRNWARE INSTRUCTIONS ** 
 
-GPIO 0-15 all have a built-in pull-up resistor,
 
-
-On PowerUp, first Void Setup Instructions is to  
+> On PowerUp, first Void Setup Instructions is to 
+ 
 * Pull the following GPIOs LOW
   + Relay Board 1, Relay Board 2, Relay Board 3 Pins
   + Set as Output and Pull Low Immediately
-
 * DHT Data Pin as Input Pin
   + To Ensure long life of the DHT Sensor, SET D4/GPIO2/17 as Input Pin and Pull HIGH/LOW(to be tested in Lab)
-
 * Initiate Pull-Up Resistors in the following pins and set then HIGH
   + Set as Input and ACTICATE PULL Up reistors Immediately 
   + Modle Selection Pins (Irrigation System, Core , Core)
@@ -87,35 +86,38 @@ On PowerUp, first Void Setup Instructions is to
 <img width="768" alt="NODE MCU PinOut" src="https://user-images.githubusercontent.com/25979664/233826097-173924ec-99f3-45a0-9114-82f6fdd2784c.png">
 
 
-In Quad-Core System Model, 6-8 Amperes is already drawn by Lights and Fans of 4 MushroomGardens from SMPS. ESP D3/GPIO0/18 is Connected to RealyBoard1 EN4.  .Try to avoid using GPIO 0 and 2 (D3, D4) as these have to be high during the boot period for normal use.
+> In Quad-Core System Model, 6-8 Amperes is already drawn by Lights and Fans of 4 MushroomGardens from SMPS. 
+> ESP D3/GPIO0/18 is Connected to RealyBoard1 EN4.  
+> Try to avoid using GPIO 0 and 2 (D3, D4) as these have to be high during the boot period for normal use.
 
 <img width="1280" alt="Pins At PowerUp" src="https://user-images.githubusercontent.com/25979664/233830919-2169bf0f-0af9-4816-8c92-7ece5975c1d2.png">
 
 
 
+****************************************************************************************
+****************************************************************************************
 
 
 
 
-# ** IOT BOX WIRING INSTRUCTIONS ** 
+# IOT BOX WIRING INSTRUCTIONS  
 
-1 ESP8266 12e Node MCU
-3 Realy Boards 
-1 DHT Sensor 
-Mode Selection Wire
+> 1 ESP8266 12e Node MCU
+> 3 Realy Boards 
+> 1 DHT Sensor 
+> Mode Selection Wires
 
 <img width="768" alt="System layout" src="https://user-images.githubusercontent.com/25979664/233828848-c834c4d6-e621-417a-a799-50f46e045ac3.png">
 
 
-* SILKPRINT/GPIO/PINNUMBER
-
+> SILKPRINT/GPIO/PINNUMBER
 * D0/GPIO16/4, D1/GPIO5/20, D2/GPIO4/19, D3/GPIO0/18 == RELAY BOARD 1 ; EN1; EN2; EN3; EN4 
 * D4/GPIO2/17, 3V3, GND == DHT SENSOR Data, Vcc, Gnd 
 * D5/GPIO14/5, D6/GPIO12/6, D7/GPIO13/7, D8/GPIO15/16 = RELAY BOARD 2; EN1; EN2; EN3; EN4 
 * CLK/GPIO6/14, D6/GPIO7/10, D7/GPIO11/9, D8/GPIO8/13 = RELAY BOARD 3; EN1; EN2; EN3; EN4 
 
-* Mode Selection Wiring. 
-A0/ADC0, SD3/GPIO10, SD2/GPIO9  
+> Mode Selection Wiring. 
+* A0/ADC0, SD3/GPIO10, SD2/GPIO9  
                                - 1,1,1 (SET ALL TO 1 and Enable PullUp During PowerOn from Software)
                                - (1,1,1) Alpha, 1 Core (All 3 PINS Open in Wiring)
                                - (1,1,0) Alpha, 2 Core (3rd ESP pin SD3 Connected to Ground)
@@ -130,7 +132,11 @@ A0/ADC0, SD3/GPIO10, SD2/GPIO9
 
 
 
-# ** Relay Connections ** 
+****************************************************************************************
+****************************************************************************************
+
+
+#  RELAY CONNECTIONS 
 
 * RELAY BOARD 1
   + EN1 = SYSTEM 1, PUMP_A, D0/GPIO16/4
@@ -151,8 +157,10 @@ A0/ADC0, SD3/GPIO10, SD2/GPIO9
   + EN4 = SYSTEM 4, PUMP_C, D8/GPIO8/13    
 
 
+****************************************************************************************
+****************************************************************************************
 
-# ** SYSTEM MODEL SELECTION ** 
+# SYSTEM MODEL SELECTION 
 
 > A0/ADC0, SD3/GPIO10, SD2/GPIO9
 SET ALL 3 pins TO 1 and Enable PullUp During PowerOn from Software
@@ -167,7 +175,12 @@ SET ALL 3 pins TO 1 and Enable PullUp During PowerOn from Software
 
 
 
-# ** ELECTRICAL PO0WER SUPPLY SETUP INSTRUCTIONS ** 
+****************************************************************************************
+****************************************************************************************
+
+
+
+# ELECTRICAL PO0WER SUPPLY SETUP INSTRUCTIONS 
 
 
 ## = For 12V, 10 Amp SMPS
@@ -180,7 +193,7 @@ SET ALL 3 pins TO 1 and Enable PullUp During PowerOn from Software
 
 
 ****************************************************************************************
-
+****************************************************************************************
 
 
 
