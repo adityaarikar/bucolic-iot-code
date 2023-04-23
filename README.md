@@ -21,24 +21,29 @@ https://drive.google.com/file/d/1eKoY9gLPEBaF0-Ln9PviBDkd0zSVOmTW/view?usp=share
 https://www.martyncurrey.com/download/esp8266wifi-library/ ; #include <ESP8266WiFi.h>
 
 > For Giving Name to the ESP8266 over WiFi Connection
-#include <ESP8266mDNS.h> ; https://github.com/arduino/esp8266/tree/master/libraries/ESP8266mDNS
+#include <ESP8266mDNS.h> ; https://github.com/arduino/esp8266/tree/master/libraries/ESP8266mDNS ;
+https://drive.google.com/file/d/10fgR-hqb-XwzfpNHIxvtf56FpLlnnWT3/view?usp=share_link
 
 
 
+> AsyncElegantOTA; v.2.27; by Ayush Sharma; Arduino IDE Library Manager
+1. #include <AsyncElegantOTA.h>
+2. #include <WiFiUdp.h>
 
 
-#include <AsyncElegantOTA.h>; AsyncElegantOTA; v.2.27; by Ayush Sharma; Arduino IDE Library Manager, #include <WiFiUdp.h>
 
-
-
-#include <WiFiClient.h>; https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClient.h
+#include <WiFiClient.h>; 2 Folders; ask which one from Aditya 
+https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClient.h
+https://www.martyncurrey.com/download/esp8266wifi-library/
 
 //used to makes esp a webserver which handels async requests // ZIp Files sent over whatsapp 
-#include <ESPAsyncTCP.h> ESPAsyncTCP.zip; over WhatsApp , 
-#include <ESPAsyncWebServer.h>; ESPAsyncWebserver.zip; over WhatsApp , ZIP File, #include "AsyncJson.h".
+#include <ESPAsyncTCP.h> ESPAsyncTCP.zip; https://drive.google.com/file/d/1hwKnZaZjIiEqsyspjaxX__Kdq7dns3vu/view?usp=share_link , 
+#include <ESPAsyncWebServer.h>; ESPAsyncWebserver.zip; https://drive.google.com/file/d/1TES0N27uNbsPT2v3WgzVypuP8LMMGjYY/view?usp=share_link, ZIP File, #include "AsyncJson.h".
 
 
 
+
+<img width="768" alt="Screen Shot 2023-04-23 at 12 57 46 pm" src="https://user-images.githubusercontent.com/25979664/233826097-173924ec-99f3-45a0-9114-82f6fdd2784c.png">
 
 
 
