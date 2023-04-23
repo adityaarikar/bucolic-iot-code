@@ -102,32 +102,34 @@
 
 # IOT BOX WIRING INSTRUCTIONS  
 
-> 1 ESP8266 12e Node MCU
-> 3 Realy Boards 
-> 1 DHT Sensor 
-> Mode Selection Wires
+> 1 ESP8266 12e Node MCU  <br>
+> 3 Realy Boards <br>
+> 1 DHT Sensor <br>
+> Mode Selection Wires  <br>
 
 <img width="768" alt="System layout" src="https://user-images.githubusercontent.com/25979664/233828848-c834c4d6-e621-417a-a799-50f46e045ac3.png">
 
 
 > SILKPRINT/GPIO/PINNUMBER
-* D0/GPIO16/4, D1/GPIO5/20, D2/GPIO4/19, D3/GPIO0/18 == RELAY BOARD 1 ; EN1; EN2; EN3; EN4 
-* D4/GPIO2/17, 3V3, GND == DHT SENSOR Data, Vcc, Gnd 
-* D5/GPIO14/5, D6/GPIO12/6, D7/GPIO13/7, D8/GPIO15/16 = RELAY BOARD 2; EN1; EN2; EN3; EN4 
-* CLK/GPIO6/14, D6/GPIO7/10, D7/GPIO11/9, D8/GPIO8/13 = RELAY BOARD 3; EN1; EN2; EN3; EN4 
+
+* D0/GPIO16/4, D1/GPIO5/20, D2/GPIO4/19, D3/GPIO0/18 == RELAY BOARD 1 ; EN1; EN2; EN3; EN4    
+* D4/GPIO2/17, 3V3, GND == DHT SENSOR Data, Vcc, Gnd    
+* D5/GPIO14/5, D6/GPIO12/6, D7/GPIO13/7, D8/GPIO15/16 = RELAY BOARD 2; EN1; EN2; EN3; EN4    
+* CLK/GPIO6/14, D6/GPIO7/10, D7/GPIO11/9, D8/GPIO8/13 = RELAY BOARD 3; EN1; EN2; EN3; EN4    
 
 > Mode Selection Wiring. 
-* A0/ADC0, SD3/GPIO10, SD2/GPIO9  
-                               - 1,1,1 (SET ALL TO 1 and Enable PullUp During PowerOn from Software)
-                               - (1,1,1) Alpha, 1 Core (All 3 PINS Open in Wiring)
-                               - (1,1,0) Alpha, 2 Core (3rd ESP pin SD3 Connected to Ground)
-                               - (1,0,1) Alpha, 3 Core (4th ESP Pin SD2 Connected to Ground)
-                               - (1,1,0) Alpha, 4 Core (3RD & 4TH ESP Pin SD3, SD2 Connecetd to Ground )
 
-                               - (0,1,1) BETA, 1 Core (A0 Connecetd to Gnd; SD2 & SD3 Open in Wiring)
-                               - (0,1,0) BETA, 2 Core (A0 Connecetd to Gnd; 3rd ESP pin SD3 Connected to Ground)
-                               - (0,0,1) BETA, 3 Core (A0 Connecetd to Gnd; 4th ESP Pin SD2 Connected to Ground)
-                               - (0,1,0) BETA, 4 Core (A0 Connecetd to Gnd; 3RD & 4TH ESP Pin SD3, SD2 Connecetd to Ground )      
+* A0/ADC0, SD3/GPIO10, SD2/GPIO9
+  - 1,1,1 (SET ALL TO 1 and Enable PullUp During PowerOn from Software)   
+  - (1,1,1) Alpha, 1 Core (All 3 PINS Open in Wiring)   
+  - (1,1,0) Alpha, 2 Core (3rd ESP pin SD3 Connected to Ground)   
+  - (1,0,1) Alpha, 3 Core (4th ESP Pin SD2 Connected to Ground)   
+  - (1,1,0) Alpha, 4 Core (3RD & 4TH ESP Pin SD3, SD2 Connecetd to Ground )   
+   
+  - (0,1,1) BETA, 1 Core (A0 Connecetd to Gnd; SD2 & SD3 Open in Wiring)   
+  - (0,1,0) BETA, 2 Core (A0 Connecetd to Gnd; 3rd ESP pin SD3 Connected to Ground)   
+  - (0,0,1) BETA, 3 Core (A0 Connecetd to Gnd; 4th ESP Pin SD2 Connected to Ground)
+  - (0,1,0) BETA, 4 Core (A0 Connecetd to Gnd; 3RD & 4TH ESP Pin SD3, SD2 Connecetd to Ground )      
 
 
 
