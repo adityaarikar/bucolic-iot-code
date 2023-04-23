@@ -64,7 +64,7 @@ Source:  ESPAsyncTCP.zip; https://drive.google.com/file/d/1hwKnZaZjIiEqsyspjaxX_
 * Use for getting time over WiFi App communication and Mobile Internet 
 * Source: Available on Arduino IDE Lib Manager;  NTPClient by Fabrice Weinberg; v3.2.1.; 
 * Libraries Supported
- - #include <NTPClient.h>
+- #include <NTPClient.h>
 
 
 
