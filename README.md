@@ -19,15 +19,14 @@
 
 ## For WiFi Connection Library
 > Use for Connecting to Phone App over Wifi for time and control; and For FOTA Code Update from Laptop over WiFi
-* Source: https://drive.google.com/file/d/1eKoY9gLPEBaF0-Ln9PviBDkd0zSVOmTW/view?usp=share_link ;
-https://www.martyncurrey.com/download/esp8266wifi-library/ ; 
+* Source: https://drive.google.com/file/d/1eKoY9gLPEBaF0-Ln9PviBDkd0zSVOmTW/view?usp=share_link; https://www.martyncurrey.com/download/esp8266wifi-library/ ;
 * Libraries Supported
- - #include <ESP8266WiFi.h>
+  - #include <ESP8266WiFi.h>
 
-> For Giving Name to the ESP8266 over WiFi Connection for Phone Communication 
+> For Giving Name to the ESP8266 over WiFi Connection for Phone Communication
 * Source:ESP8266mDNS.zip;  https://github.com/arduino/esp8266/tree/master/libraries/ESP8266mDNS ;
 https://drive.google.com/file/d/10fgR-hqb-XwzfpNHIxvtf56FpLlnnWT3/view?usp=share_link
-* Libraries Supported: 
+* Libraries Supported:
   - #include <ESP8266mDNS.h> ; 
 
 ## For FOTA Wirelsss Code Update on NodeMCU
