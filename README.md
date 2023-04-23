@@ -63,6 +63,7 @@
 
 
 
+
 # ** IOT BOX CONNECTION INSTRUCTIONS ** 
 
 
@@ -71,8 +72,10 @@
 
 <img width="768" alt="System layout" src="https://user-images.githubusercontent.com/25979664/233828848-c834c4d6-e621-417a-a799-50f46e045ac3.png">
 
+<img width="1280" alt="Screen Shot 2023-04-23 at 2 40 44 pm" src="https://user-images.githubusercontent.com/25979664/233830919-2169bf0f-0af9-4816-8c92-7ece5975c1d2.png">
 
 
+## Relay Connections 
 
 
 
