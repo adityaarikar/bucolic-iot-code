@@ -1,10 +1,14 @@
-# ** IOT BOX CONNECTION INSTRUCTIONS ** 
-
-# ** IOT Coding Env Setup  INSTRUCTIONS ** 
 
 
-> Arduino IDE: Adruino 2.1.0; https://www.arduino.cc/en/software
-1. Comes Preinitiated with; #include <math.h>; #include <Arduino.h>; #include <arduinoHTTP.h>(to be verefied)
+# ** IOT CODING ENVIRONMENT SETUP INSTRUCTIONS ** 
+
+
+> Arduino Integrated Development Environment  
+* Adruino IDE 2.1.0;
+* Source: https://www.arduino.cc/en/software
+* Libraries Supported
+   - #include <math.h>; basic maths functions in code
+   - #include <Arduino.h>; basic hardware initilaisations 
 
 > DHT Sensor Library
 1.SimpleDHT by WinLin 1.0.15; Available on Arduino IDE Lib Manager; #include <SimpleDHT.h>
@@ -40,6 +44,9 @@ https://www.martyncurrey.com/download/esp8266wifi-library/
 #include <ESPAsyncTCP.h> ESPAsyncTCP.zip; https://drive.google.com/file/d/1hwKnZaZjIiEqsyspjaxX__Kdq7dns3vu/view?usp=share_link , 
 #include <ESPAsyncWebServer.h>; ESPAsyncWebserver.zip; https://drive.google.com/file/d/1TES0N27uNbsPT2v3WgzVypuP8LMMGjYY/view?usp=share_link, ZIP File, #include "AsyncJson.h".
 
+
+
+# ** IOT BOX CONNECTION INSTRUCTIONS ** 
 
 
 
