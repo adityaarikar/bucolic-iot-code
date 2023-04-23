@@ -1,6 +1,12 @@
 # ** IOT BOX CONNECTION INSTRUCTIONS ** 
 
+Env Setup 
 
+Arduino IDE: Adruino 2.1.0
+
+DHT Library : SimpleDHT by WinLin 1.0.15; Available on Arduino IDE Lib Manager
+ArduinoJson by Benot Blanchon 0.2.0; Available on Arduino IDE Lib Manager
+ArduinoHTTP 
 
 #  Single_Core_IoT for Only Supporting Mushroom Garden System 1 
 
