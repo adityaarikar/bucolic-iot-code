@@ -10,6 +10,9 @@
     - #include <math.h>; basic maths functions in code
     - #include <Arduino.h>; basic hardware initilaisations 
  
+ * NOTES ON INSTALLING LIBRARIES: https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries 
+ 
+ 
 ## DHT Sensor Library
 > Used for reading Temperature and Humidity 
 * Source: Available on Arduino IDE Lib Manager; SimpleDHT by WinLin 1.0.15;
