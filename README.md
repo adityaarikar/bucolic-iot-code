@@ -69,9 +69,10 @@
 ****************************************************************************************
 
 
-# ** IOT BOX DEPENDENT FIRNWARE INSTRUCTIONS ** 
+# ** IOT BOX DEPENDENT FIRMWARE INSTRUCTIONS ** 
 
-
+> In Arduino IDE, Tools --> Baord --> ESP8266 Boards (2.7.4.) --> NodeMCU 1.0 ( ESP-12E Module) 
+</br>
 > On PowerUp, first Void Setup Instructions is to 
  
 * Pull the following GPIOs LOW
